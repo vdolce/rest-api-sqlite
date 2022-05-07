@@ -1,6 +1,7 @@
 """ Main file """
 import argparse
 import json
+import logging
 import os
 import sqlite3
 from datetime import date, datetime
@@ -10,6 +11,10 @@ from typing import List, Tuple
 from dateutil.parser import isoparse
 
 from rest_api_sqlite.queries import FILTERED_INVOICES_QUERY
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def is_date(string: str) -> bool:
@@ -48,7 +53,7 @@ def write_json(dict_data: List[dict], filename: str) -> None:
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w", encoding="utf-8") as outfile:
         outfile.write(json_object)
-        print(f"Created file {filename}")
+        logger.info("Created file %s", filename)
 
 
 def open_db_connection() -> Tuple[
@@ -62,10 +67,10 @@ def open_db_connection() -> Tuple[
         db_name = Path("db").joinpath("Chinook_Sqlite_db.sqlite")
         db_connection = sqlite3.connect(db_name, uri=True)
         db_cursor = db_connection.cursor()
-        print("Database created and Successfully Connected to SQLite")
+        logger.info("Database created and Successfully Connected to SQLite")
         return db_connection, db_cursor
     except sqlite3.Error as error:
-        print("Error while connecting to sqlite", error)
+        logger.error("Error while connecting to sqlite: %s", error)
         raise
 
 
@@ -78,7 +83,7 @@ def execute_query(
     try:
         return db_cursor.execute(query, query_params)
     except sqlite3.Error as error:
-        print("Error while executing the query", error)
+        logger.error("Error while connecting to sqlite: %s", error)
         raise
 
 
@@ -88,7 +93,7 @@ def close_db_connection(connection: sqlite3.Connection) -> None:
     """
     if connection:
         connection.close()
-        print("The SQLite connection is closed")
+        logger.info("The SQLite connection is closed")
 
 
 def cursor_to_dict(cursor: sqlite3.Cursor) -> List[dict]:
@@ -138,7 +143,7 @@ def get_filtered_invoices(start=None, end=None):
 
     sqlite_connection, cursor = open_db_connection()
 
-    print(f"Querying from {start} to {end}")
+    logger.info("Querying from %s to %s", start, end)
     params = {"start": start, "end": end}
     results = execute_query(cursor, FILTERED_INVOICES_QUERY, params)
     dict_output = cursor_to_dict(results)
