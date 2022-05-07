@@ -137,8 +137,10 @@ def get_filtered_invoices(start=None, end=None):
         end = date.today().isoformat()
 
     if not (is_date(start) and is_date(end)):
-        raise ValueError("Please provide valide dates in the format YYYY-MM-DDDD")
+        logger.error("Dates are not in the format YYYY-MM-DDDD")
+        raise ValueError("Dates are not in the format YYYY-MM-DDDD")
     if not valid_dates(start, end):
+        logger.error("The end date must be greater than or equal to the start date")
         raise ValueError("The end date must be greater than or equal to the start date")
 
     sqlite_connection, cursor = open_db_connection()
