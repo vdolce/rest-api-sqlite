@@ -13,11 +13,6 @@ logger.setLevel(logging.INFO)
 app = FastAPI()
 
 
-@app.get("/items")
-def read_item(item_id: Optional[str] = None, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
-
-
 @app.get("/invoices")
 def get_invoices(start: Optional[str] = None, end: Optional[str] = None):
     """Given optional start and end date, this API return a list of invoices of all customers"""
