@@ -56,4 +56,6 @@ curl -X 'GET' \
 
 Run app test with:
 
-pytest -s src/test/test_main.py
+```
+pytest test/test_main.py
+```
